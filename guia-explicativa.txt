@@ -1,41 +1,121 @@
+Guía Explicativa del Código Completo (HTML Semántico y CSS Técnico Avanzado)En esta entrega, la maquetación destaca por lograr un diseño totalmente fluido e interactivo prescindiendo de clases CSS y de herramientas modernas como Flexbox o Grid. A continuación se analizan los bloques de código más significativos de la solución.1. Reset Profesional y Modelo de Caja ExtendidoContexto: Para garantizar que todos los navegadores interpreten exactamente el mismo tamaño de los elementos sin descuadres visuales, se utiliza un reset que incluye pseudoelementos:CSS*,
+*::before,
+*::after {
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+Explicación del Código:*: Selecciona todos los elementos HTML.*::before y *::after: Incluye también cualquier contenido generado dinámicamente con CSS.-webkit-box-sizing y -moz-box-sizing: Prefijos para compatibilidad con navegadores antiguos de Apple/Safari y Mozilla Firefox.box-sizing: border-box: Asegura que el padding y los bordes queden contenidos dentro del ancho declarado, permitiendo usar porcentajes en maquetación sin que las cajas se rompan al agregar espacio interno.2. Menú de Navegación Accesible y Responsivo con inline-blockContexto: Los elementos de lista <li> se comportan normalmente como bloques verticales. Para alinearlos horizontalmente sin Flexbox ni floats, se emplea la alineación en línea:HTML<nav>
+    <ul>
+        <li><a href="#resumen">Resumen</a></li>
+        <li><a href="#podcast">Podcast</a></li>
+        <li><a href="https://gemini.google.com/notebook/..." target="_blank" rel="noopener">NotebookLM</a></li>
+    </ul>
+</nav>
+CSSnav li {
+    display: inline-block;
+    margin: 0 1%;
+}
 
-Guía Explicativa del Proyecto
-Justificación de las Etiquetas Semánticas (HTML5)
-<header>: Encierra el título institucional de la actividad y la introducción general de la entrega.
+nav a {
+    display: block;
+    padding: 12px 18px;
+    color: #ffffff;
+    text-decoration: none;
+    font-weight: bold;
+}
 
-<nav>: Define la barra de navegación del sitio con una lista no ordenada (<ul>), garantizando la accesibilidad mediante teclado.
+nav a:hover,
+nav a:focus {
+    background-color: #415a77;
+    color: #e0e1dd;
+}
+Explicación del Código:display: inline-block: Convierte las etiquetas <li> en elementos en línea que aceptan dimensiones y márgenes, situándolas de forma fluida una al lado de la otra.target="_blank" y rel="noopener": En el HTML, abre los enlaces externos (como NotebookLM) en una pestaña nueva con protección de seguridad contra ataques de redirección.nav a:focus: Mejora la accesibilidad permitiendo que los usuarios que navegan mediante el teclado reconozcan visualmente qué enlace está seleccionado.3. Vídeo Aspect Ratio 16:9 Fluido (Técnica "Padding Bottom Hack")Contexto: Los elementos <iframe> de YouTube no son fluidos por defecto; si el contenedor se reduce, el vídeo se corta o genera barras negras. Para resolver esto sin JavaScript, se aplica un truco matemático mediante CSS puro:HTML<section id="podcast">
+    <h2>Episodio Completo del Podcast</h2>
+    <figure>
+        <div>
+            <iframe 
+                src="https://www.youtube-nocookie.com/embed/IwaF7-COu1c" 
+                title="Universo, IA y el Destino del Ser Humano"
+                allowfullscreen>
+            </iframe>
+        </div>
+        <figcaption>Vídeo extraído del canal oficial Aladetres (Episodio 161).</figcaption>
+    </figure>
+</section>
+CSSsection#podcast div {
+    position: relative;
+    width: 100%;
+    padding-bottom: 56.25%; /* Relación de aspecto 16:9 (9 / 16 = 0.5625) */
+    height: 0;
+    overflow: hidden;
+    background-color: #000000;
+}
 
-<main>: Delimita el contenido central y exclusivo del documento sin duplicar barras globales.
+section#podcast iframe {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    border: 0;
+}
+Explicación del Código:padding-bottom: 56.25%: En CSS, el porcentaje de padding vertical se calcula respecto al ancho del elemento padre. Dividir $9 \div 16 = 0.5625$ (56.25%) fuerza a la caja a mantener la proporción exacta de las pantallas de alta definición (16:9) sin importar qué ancho adopte en el monitor.height: 0 y overflow: hidden: Colapsan la altura del div para que responda únicamente al cálculo del padding.position: absolute en el iframe: Permite estirar la pantalla del reproductor para rellenar al 100% la caja del contenedor proporcional.4. Sistema de Maquetación en 3 Columnas sin Clases (float + %)Contexto: La sección #temas divide la información en tres columnas idénticas usando la etiqueta <article> sin aplicar ninguna clase personalizada:HTML<section id="temas">
+    <h2>Ejes Temáticos Principales</h2>
+    <article>
+        <h3>1. Estado Actual de la Computación Cuántica</h3>
+        <p>...</p>
+    </article>
+    <article>
+        <h3>2. IA y Dimensión Emocional</h3>
+        <p>...</p>
+    </article>
+    <article>
+        <h3>3. Gobernanza y Nuevo Contrato Social</h3>
+        <p>...</p>
+    </article>
+</section>
+CSSsection#temas article {
+    float: left;
+    width: 31.333%;
+    margin-right: 2%;
+    background-color: #f8f9fa;
+    padding: 2.5%;
+    border: 1px solid #dcdcdc;
+    border-radius: 4px;
+    min-height: 220px;
+}
 
-<section>: Agrupa lógicamente los bloques temáticos principales (Resumen, Podcast, Ejes Temáticos, Galería).
+section#temas article:last-child {
+    margin-right: 0;
+}
+Explicación del Código:Cálculo de Ancho: Tres columnas de $31.333\%$ equivalen a $94\%$. Dos márgenes intermedios del $2\%$ suman un $4\%$. Total = $94\% + 4\% = 98\%$ (dejando un $2\%$ de tolerancia para evitar saltos de línea por redondeo del navegador).article:last-child: Detecta el último artículo dentro de la sección y elimina su margen derecho (margin-right: 0), garantizando que la última columna encaje en el extremo de la pantalla.5. Galería Cuadriculada (2x2) mediante Pseudoclase :nth-of-type(even)Contexto: En la sección #galeria hay 4 imágenes. Se requiere que se acomoden en filas de 2 sin usar clases para indicar cuándo termina una fila:HTML<section id="galeria">
+    <h2>Galería Visual del Proyecto</h2>
+    <figure><img src="img/Jose-Ignacio.jpg" alt="Prof. José Ignacio Latorre"></figure>
+    <figure><img src="img/Agujero-negro.jpg" alt="Agujero Negro"></figure>
+    <figure><img src="img/IA-cuantica.jpg" alt="IA y Cuántica"></figure>
+    <figure><img src="img/Computadora-cuantica.jpg" alt="Computadora Cuántica"></figure>
+</section>
+CSSsection#galeria figure {
+    float: left;
+    width: 48.5%;
+    margin-right: 3%;
+    margin-bottom: 3%;
+    background-color: #f8f9fa;
+    padding: 2%;
+    border: 1px solid #e0e0e0;
+}
 
-<article>: Utilizado para cada una de las 3 columnas de los ejes temáticos, permitiendo que la información sea autosuficiente.
-
-<figure> y <figcaption>: Envuelven las imágenes de la galería y la incrustación del podcast, asociando semánticamente los recursos visuales con sus explicaciones contextuales.
-
-<footer>: Contiene el cierre de derechos y las especificaciones técnicas requeridas.
-
-Estrategia Matemática y CSS de Maquetación Fluida Tradicional (Sin Flexbox, Grid ni Media Queries)
-Para lograr un sitio 100% responsivo bajo restricciones técnicas estrictas, se utilizaron tres técnicas clásicas:
-
-Unidades Relativas (%) y max-width:
-
-El contenedor principal se define con width: 90% y un límite superior max-width: 1100px. Esto permite que el sitio se reduzca continuamente en pantallas móviles y se mantenga centrado en monitores ultra-anquetos.
-
-Sistema de Grid Fluido mediante float y Porcentajes Exactos:
-
-Columnas a 3 Secciones: Cada columna ocupa 31.333% del ancho disponible, con un margen horizontal de 2% (31.333% * 3 + 2% * 2 ≈ 100%).
-
-Columnas de Galería en Mitades: Ocupan 48.5% con márgenes de 3% (48.5% * 2 + 3% = 100%).
-
-Contención del Flujo (clearfix): Se implementó el patrón CSS .clearfix::after con clear: both; display: table; en los contenedores padres para evitar el colapso de altura derivado de sacar elementos del flujo normal con float: left.
-
-Navegación con display: inline-block:
-
-En lugar de emplear display: flex, los elementos de lista (<li>) se configuraron como display: inline-block;. Esto alinea los botones horizontalmente mientras se ajustan de manera fluida y fluida en pantallas estrechas sin desbordar la pantalla.
-
-Multimedia Fluida y Aspect Ratio 16:9 Adaptable:
-
-Para la imagen se aplicó la regla fundamental max-width: 100%; height: auto;, permitiendo que la escala gráfica jamás desborde la caja contenedora.
+section#galeria figure:nth-of-type(even) {
+    margin-right: 0;
+}
+Explicación del Código:Cálculo Porcentual: Cada tarjeta ocupa el $48.5\%$. Dos columnas suman $97\%$, sumado al $3\%$ de margen derecho se completa el $100\%$ del ancho por fila.figure:nth-of-type(even): Detecta los elementos pares (2º y 4º elemento <figure>) y les retira el margen a la derecha. Esto obliga automáticamente al 3º elemento a saltar a una nueva fila.6. Mecanismo Automático de Limpieza de Flotantes (Clearfix con Pseudoelemento)Contexto: Cuando los elementos internos (<article> o <figure>) flotan (float: left), el contenedor padre (<section>) pierde la noción de la altura de sus hijos y se "colapsa" a 0px de alto, haciendo que los bordes o elementos inferiores (como el <footer>) se monten sobre el contenido.CSSsection::after {
+    content: "";
+    display: table;
+    clear: both;
+}
+Explicación del Código:section::after: Inyecta un pseudoelemento invisible al final de cada sección HTML.clear: both: Le indica al navegador que rompa los flotantes existentes a izquierda y derecha antes de cerrar la sección. Esto fuerza a la <section> a expandir su altura real envolviendo todos sus contenidos internos sin romper el diseño.o;, permitiendo que la escala gráfica jamás desborde la caja contenedora.
 
 Para el <iframe> de YouTube se utilizó el truco clásico del padding-bottom: 56.25% (proporción 9 / 16 = 0.5625) combinado con position: absolute a 100% de ancho y alto, logrando que el vídeo mantenga la relación de aspecto sin importar el tamaño del navegador.
